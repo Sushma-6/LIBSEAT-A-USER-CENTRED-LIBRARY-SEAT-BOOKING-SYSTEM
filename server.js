@@ -148,4 +148,6 @@ http.createServer(async (req, res) => {
     }
   }
   send(res, 404, { error: 'Not found' });
-}).listen(PORT, () => console.log('LibSeat running at http://localhost:' + PORT));
+}).listen(PORT, '0.0.0.0', () => {
+  console.log(`LibSeat running on port ${PORT}`);
+});
