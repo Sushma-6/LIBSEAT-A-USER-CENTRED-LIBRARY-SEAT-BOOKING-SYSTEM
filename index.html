@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LibSeat: Library Seat Booking</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--ink:#1c2230;--mut:#5b6475;--pri:#2f5bea;--pi:#fff;--ok:#e3f4e8;--okb:#2e8b57;--tk:#e6e8ec;--bd:#d5d9e0;--er:#b3261e}
+@media(prefers-color-scheme:dark){:root{--bg:#12151c;--card:#1b2030;--ink:#eef0f5;--mut:#a2aabb;--pri:#6f93ff;--pi:#0d1220;--ok:#1d3a2a;--okb:#5ccf93;--tk:#2a3042;--bd:#343b52;--er:#ff8a80}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1rem/1.5 system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+main{flex:1;width:100%}.w{max-width:960px;margin:0 auto;padding:16px}.nar{max-width:460px;margin:0 auto}
+h1{font-size:1.6rem;margin:8px 0}h2{font-size:1.06rem;margin:0 0 8px}.m{color:var(--mut);font-size:.875rem}.mt{margin-top:10px}
+a{color:var(--pri)}.c{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin:12px 0}
+button,input,.btn{font:inherit;min-height:44px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--ink);padding:8px 14px}
+button{cursor:pointer}:is(button,input,a):focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.p{background:var(--pri);color:var(--pi);border-color:var(--pri);font-weight:600}form .p,.go{width:100%}button:disabled{opacity:.45;cursor:not-allowed}
+a.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:var(--ink);margin-top:6px}a.btn.p{color:var(--pi)}
+input{width:100%;margin:4px 0 10px}.ck{display:flex;gap:8px;align-items:center;font-size:.875rem;margin-bottom:12px}.ck input{width:auto;min-height:0;margin:0}
+nav{background:var(--card);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:5}
+.nb{max-width:960px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.brand{font-weight:800;font-size:1.25rem;text-decoration:none;color:var(--ink);padding:6px 8px}.col{display:flex;gap:6px;flex:1;align-items:center;flex-wrap:wrap}.sp{flex:1}
+.col a{padding:0 12px;min-height:44px;display:inline-flex;align-items:center;border-radius:10px;text-decoration:none;color:var(--ink)}.col a.on{background:var(--pri);color:var(--pi)}
+.menu{display:none;margin-left:auto}.who{font-size:.875rem;color:var(--mut)}
+@media(max-width:700px){.menu{display:inline-block}.col{display:none;flex-direction:column;align-items:stretch;width:100%}nav.open .col{display:flex}.sp{display:none}}
+.hero{padding:28px 0}.hero p{font-size:1.1rem;max-width:560px}.tiles,.two{display:grid;gap:12px}.tiles{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}.two{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.n{font-size:2rem;font-weight:700}.bar{height:10px;background:var(--tk);border-radius:6px;overflow:hidden;margin:4px 0 12px}.bar i{display:block;height:100%;background:var(--pri)}
+.r{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}.b{font-weight:700}
+.tag{font-size:.8rem;padding:2px 10px;border-radius:99px;border:1px solid var(--bd)}.tag.booked,.tag.checked_in{background:var(--ok);border-color:var(--okb)}
+.ch{display:flex;flex-wrap:wrap;gap:8px}.ch button[aria-pressed=true]{background:var(--pri);color:var(--pi);border-color:var(--pri)}
+.g{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.g button{padding:0;font-size:.8rem;background:var(--ok);border:2px solid var(--okb)}
+.g button.t{background:var(--tk);border-color:var(--tk);color:var(--mut);text-decoration:line-through}.g button[aria-pressed=true]{background:var(--pri);border-color:var(--pri);color:var(--pi);font-weight:700}
+.msg{padding:10px;border-radius:10px;margin:10px 0;font-weight:600}.msg.e{border:2px solid var(--er);color:var(--er)}.msg.o{background:var(--ok);border:1px solid var(--okb)}
+footer{background:var(--card);border-top:1px solid var(--bd);margin-top:24px}.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}footer a{display:inline-block;padding:4px 0}
+html[data-size=l]{font-size:112.5%}html[data-size=xl]{font-size:125%}
+html[data-hc=on]{--bg:#000;--card:#000;--ink:#fff;--mut:#eee;--pri:#ffd600;--pi:#000;--bd:#fff;--ok:#003d00;--okb:#7cfc00;--tk:#333;--er:#ff7b7b}
+html[data-rm=on] *{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+.panel{position:fixed;right:12px;top:64px;z-index:10;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;width:min(320px,calc(100vw - 24px));box-shadow:0 8px 24px rgba(0,0,0,.25)}.panel[hidden]{display:none}
+.rd{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:1px solid var(--bd);border-radius:10px;cursor:pointer}.rd input{width:auto;min-height:0;margin:0}
+fieldset{border:1px solid var(--bd)}legend{font-weight:600;padding:0 4px}table{width:100%;border-collapse:collapse;font-size:.875rem}th,td{text-align:left;padding:6px;border-bottom:1px solid var(--bd);white-space:nowrap}
+</style></head><body>
+<nav id="nav"></nav><div id="a11y" class="panel" role="dialog" aria-label="Accessibility settings" hidden></div>
+<main class="w"><div id="msg" role="status" aria-live="polite"></div><div id="pg"></div></main>
+<footer><div class="w fg"><div><b>LibSeat</b><p class="m">Reserve a library seat, check in, and study without the hunt.</p></div>
+<div><b>Pages</b><br><a href="#/">Home</a><br><a href="#/dashboard">Dashboard</a><br><a href="#/book">Book a seat</a></div>
+<div><b>About</b><p class="m">HCI PBL project, Woxsen University. Designed with user-centred design and Nielsen's heuristics.</p></div></div>
+<div class="w m">© 2026 LibSeat</div></footer>
+<script>
+const $=i=>document.getElementById(i),M=h=>{$('pg').innerHTML=h},say=(t,k)=>{$('msg').innerHTML=t?`<div class="msg ${k}">${esc(t)}</div>`:''};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+let TOK=localStorage.getItem('lt')||'',ME=null;
+function api(u,o){o=o||{};o.headers=Object.assign({'Content-Type':'application/json'},o.headers||{});if(TOK)o.headers.Authorization='Bearer '+TOK;
+ return fetch(u,o).then(r=>r.json().then(j=>{if(r.status===401&&TOK){logout();say('Your session ended. Please log in again.','e')}if(!r.ok)throw new Error(j.error||'Something went wrong.');return j}))}
+function logout(){if(TOK)fetch('/api/logout',{method:'POST',headers:{Authorization:'Bearer '+TOK}}).catch(()=>{});TOK='';ME=null;localStorage.removeItem('lt');if(location.hash==='#/'||!location.hash)route();else location.hash='#/'}
+const PRIV=['dashboard','book','bookings','profile','feedback','admin'];
+function getP(){try{return JSON.parse(localStorage.getItem('lp')||'{}')}catch(e){return{}}}
+function applyPrefs(p){const e=document.documentElement;e.dataset.size=p.size||'m';e.dataset.hc=p.contrast?'on':'off';e.dataset.rm=p.motion?'on':'off'}
+function syncPrefs(){if(ME&&ME.prefs&&ME.prefs.size){localStorage.setItem('lp',JSON.stringify(ME.prefs));applyPrefs(ME.prefs)}}
+function setP(k,v){const p=getP();p[k]=v;localStorage.setItem('lp',JSON.stringify(p));applyPrefs(p);if(TOK)api('/api/prefs',{method:'POST',body:JSON.stringify({size:p.size||'m',contrast:!!p.contrast,motion:!!p.motion})}).catch(()=>{})}
+function togA(){const a=$('a11y');a.hidden=!a.hidden;$('nav').querySelectorAll('[aria-label="Accessibility settings"]').forEach(b=>b.setAttribute('aria-expanded',!a.hidden));if(!a.hidden)drawA()}
+function drawA(){const p=getP();$('a11y').innerHTML=`<h2>Accessibility</h2><div class="m">Text size</div><div class="ch">${[['m','Normal'],['l','Large'],['xl','Extra large']].map(s=>`<button aria-pressed="${(p.size||'m')===s[0]}" onclick="setP('size','${s[0]}');drawA()">${s[1]}</button>`).join('')}</div><label class="ck mt"><input type="checkbox" ${p.contrast?'checked':''} onchange="setP('contrast',this.checked)"> High contrast</label><label class="ck"><input type="checkbox" ${p.motion?'checked':''} onchange="setP('motion',this.checked)"> Reduce motion</label><button onclick="togA()">Close</button>`}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('a11y').hidden=true});
+function navbar(pg){const L=[['home','Home','#/'],...(TOK?[['dashboard','Dashboard','#/dashboard'],['book','Book a seat','#/book'],['bookings','My bookings','#/bookings'],['feedback','Feedback','#/feedback'],...(ME&&ME.role==='admin'?[['admin','Admin','#/admin']]:[])]:[])];
+ $('nav').innerHTML=`<div class="nb"><a class="brand" href="#/">📚 LibSeat</a><button class="menu" aria-label="Menu" aria-expanded="false" onclick="const o=$('nav').classList.toggle('open');this.setAttribute('aria-expanded',o)">Menu</button><div class="col">${L.map(l=>`<a href="${l[2]}" ${l[0]===pg?'class="on" aria-current="page"':''}>${l[1]}</a>`).join('')}<span class="sp"></span><button aria-label="Accessibility settings" aria-expanded="false" onclick="togA()">Aa</button>${TOK?`<a href="#/profile" ${pg==='profile'?'class="on"':''}>${esc(ME?ME.name:'Profile')}</a><button onclick="logout()">Log out</button>`:`<a href="#/login" ${pg==='login'?'class="on"':''}>Log in</a><a class="p" href="#/signup" style="background:var(--pri);color:var(--pi)">Sign up</a>`}</div></div>`}
+const tile=(n,l)=>`<div class="c"><div class="n">${n}</div><div class="m">${l}</div></div>`;
+const bk=(b,a)=>`<div class="c"><div class="r"><span class="b">Seat ${b.seat} · Floor ${b.floor}</span><span class="tag ${b.status}">${b.status.replace('_',' ')}</span></div><div class="m">${b.date} · ${b.slot}</div>${a&&(b.status==='booked'||b.status==='checked_in')?`<div class="ch mt">${b.status==='booked'?`<button onclick="doAct('${b.id}','checkin')">Check in</button>`:''}<button onclick="doExt('${b.id}')">Extend by 1 slot</button>${b.status==='booked'?`<button onclick="if(confirm('Cancel this booking?'))doAct('${b.id}','cancel')">Cancel</button>`:''}</div>`:''}</div>`;
+function doAct(id,a){api(`/api/bookings/${id}/${a}`,{method:'POST'}).then(()=>{route();if(a==='checkin')say('You are checked in. Enjoy your study session.','o');else{$('msg').innerHTML=`<div class="msg o">Booking cancelled. <button id="undo" onclick="doUndo('${id}')">Undo</button></div>`;setTimeout(()=>{if($('undo'))say('')},12000)}}).catch(e=>say(e.message,'e'))}
+function doUndo(id){api(`/api/bookings/${id}/undo`,{method:'POST'}).then(()=>{route();say('Booking restored.','o')}).catch(e=>say(e.message,'e'))}
+function doExt(id){api(`/api/bookings/${id}/extend`,{method:'POST'}).then(r=>{route();say(`Extended: the same seat is now also booked for ${r.slot}.`,'o')}).catch(e=>say(e.message,'e'))}
+function home(){M(`<section class="hero"><h1>Find a library seat in under a minute</h1><p>See which seats are free, reserve one for today or tomorrow, and check in when you arrive.</p><a class="btn p" href="${TOK?'#/book':'#/signup'}">${TOK?'Book a seat':'Create a free account'}</a> <a class="btn" href="${TOK?'#/dashboard':'#/login'}">${TOK?'Open dashboard':'Log in'}</a></section>
+<div class="two"><div class="c"><h2>See before you go</h2><p class="m">A live seat map shows free seats, power outlets and the quiet zone.</p></div><div class="c"><h2>Fair for everyone</h2><p class="m">Seats not checked into within 15 minutes are released to other students.</p></div><div class="c"><h2>Change your mind easily</h2><p class="m">Cancel with one tap and the seat becomes free again.</p></div></div>`)}
+function authForm(t){const s=t==='signup';M(`<div class="nar c"><h1>${s?'Create your account':'Log in'}</h1><form onsubmit="return submitAuth(event,${s})">
+${s?`<label for="nm">Full name</label><input id="nm" autocomplete="name" required><label for="rl">Roll number</label><input id="rl" autocomplete="off" required><label for="em">Email</label><input id="em" type="email" autocomplete="email" required>`:`<label for="id">Roll number or email</label><input id="id" autocomplete="username" required>`}
+<label for="pw">Password${s?' (at least 8 characters)':''}</label><input id="pw" type="password" autocomplete="${s?'new':'current'}-password" required minlength="${s?8:1}">
+<label class="ck"><input type="checkbox" onchange="$('pw').type=this.checked?'text':'password'"> Show password</label><button class="p" type="submit">${s?'Create account':'Log in'}</button></form>
+<p class="m">${s?'Already registered? <a href="#/login">Log in</a>':'New here? <a href="#/signup">Create an account</a>'}</p></div>`)}
+function submitAuth(e,s){e.preventDefault();const b=s?{name:$('nm').value,roll:$('rl').value,email:$('em').value,password:$('pw').value}:{id:$('id').value,password:$('pw').value};
+ api(s?'/api/signup':'/api/login',{method:'POST',body:JSON.stringify(b)}).then(r=>{TOK=r.token;ME=r.user;syncPrefs();localStorage.setItem('lt',TOK);location.hash='#/dashboard'}).catch(er=>say(er.message,'e'));return false}
+function dashboard(){M('<p class="m">Loading your dashboard…</p>');api('/api/dashboard').then(d=>{const u=d.upcoming,k=d.counts;
+ M(`<h1>Hello, ${esc(ME.name.split(' ')[0])}</h1><p class="m">Your study-seat overview.</p><div class="tiles">${tile(k.total,'Total bookings')}${tile(d.hours,'Study hours')}${tile(k.cancelled,'Cancelled')}${tile(k.missed,'Missed (released)')}</div>
+ <div class="two"><div class="c"><h2>Next booking</h2>${u?bk(u,true).replace('class="c"','style="margin:0"'):'<p class="m">No upcoming booking. Reserve a seat to get started.</p><a class="btn p" href="#/book">Book a seat</a>'}</div>
+ <div class="c"><h2>Free seats · ${d.date} ${d.slot}</h2>${d.floors.map(f=>`<div class="r"><span>Floor ${f.floor}</span><span class="m">${f.total-f.taken} of ${f.total} free</span></div><div class="bar"><i style="width:${f.taken/f.total*100}%"></i></div>`).join('')}<a class="btn" href="#/book">See seat map</a></div></div>
+ <h2 class="mt">Recent activity</h2>${d.recent.length?d.recent.map(b=>bk(b,false)).join(''):'<div class="c m">Nothing yet. Your bookings will appear here.</div>'}`)}).catch(e=>say(e.message,'e'))}
+function bookings(){M('<p class="m">Loading…</p>');api('/api/bookings').then(a=>M(`<h1>My bookings</h1>${a.length?a.map(b=>bk(b,true)).join(''):'<div class="c m">No bookings yet. <a href="#/book">Book a seat</a></div>'}`)).catch(e=>say(e.message,'e'))}
+function profile(){M(`<div class="nar"><h1>Your profile</h1><div class="c"><div class="m">Roll number ${esc(ME.roll)} · ${esc(ME.email)}${ME.role==='admin'?' · Administrator':''}</div><form onsubmit="return saveName(event)"><label for="pn">Full name</label><input id="pn" value="${esc(ME.name)}" required><button class="p" type="submit">Save name</button></form></div>
+<div class="c"><h2>Change password</h2><form onsubmit="return savePw(event)"><label for="p0">Current password</label><input id="p0" type="password" autocomplete="current-password" required><label for="p1">New password (at least 8 characters)</label><input id="p1" type="password" autocomplete="new-password" minlength="8" required><button class="p" type="submit">Update password</button></form></div></div>`)}
+function saveName(e){e.preventDefault();api('/api/profile',{method:'POST',body:JSON.stringify({name:$('pn').value})}).then(u=>{ME=u;navbar('profile');say('Name updated.','o')}).catch(er=>say(er.message,'e'));return false}
+function savePw(e){e.preventDefault();api('/api/password',{method:'POST',body:JSON.stringify({current:$('p0').value,next:$('p1').value})}).then(()=>{$('p0').value='';$('p1').value='';say('Password updated.','o')}).catch(er=>say(er.message,'e'));return false}
+const SUS=['I think that I would like to use this system frequently.','I found the system unnecessarily complex.','I thought the system was easy to use.','I think that I would need the support of a technical person to be able to use this system.','I found the various functions in this system were well integrated.','I thought there was too much inconsistency in this system.','I would imagine that most people would learn to use this system very quickly.','I found the system very cumbersome to use.','I felt very confident using the system.','I needed to learn a lot of things before I could get going with this system.'];
+function feedback(){api('/api/sus').then(r=>M(`<div class="nar"><h1>Rate LibSeat</h1><p class="m">Answer all 10 statements. 1 = strongly disagree, 5 = strongly agree.</p>${r?`<div class="msg o">Your SUS score: ${r.score} / 100. You can submit again to update it.</div>`:''}<form onsubmit="return sendSus(event)">${SUS.map((s,i)=>`<fieldset class="c"><legend>${i+1}. ${s}</legend><div class="ch">${[1,2,3,4,5].map(v=>`<label class="rd"><input type="radio" name="q${i}" value="${v}" required>${v}</label>`).join('')}</div></fieldset>`).join('')}<label for="cm">Comments (optional)</label><input id="cm" maxlength="500"><button class="p" type="submit">Submit feedback</button></form></div>`)).catch(e=>say(e.message,'e'))}
+function sendSus(e){e.preventDefault();const a=SUS.map((_,i)=>+document.querySelector('input[name=q'+i+']:checked').value);api('/api/sus',{method:'POST',body:JSON.stringify({answers:a,comment:$('cm').value})}).then(r=>{feedback();say(`Thank you! Your SUS score is ${r.score} / 100.`,'o')}).catch(er=>say(er.message,'e'));return false}
+function admin(){M('<p class="m">Loading…</p>');api('/api/admin/stats').then(d=>{const bars=(a,l)=>{const m=Math.max(1,...a.map(x=>x.n));return a.map(x=>`<div class="r"><span>${x[l]}</span><span class="m">${x.n}</span></div><div class="bar"><i style="width:${x.n/m*100}%"></i></div>`).join('')};
+ M(`<h1>Admin dashboard</h1><div class="tiles">${tile(d.users,'Students')}${tile(d.total,'Bookings')}${tile(d.sus.n?d.sus.avg:'-','Average SUS score ('+d.sus.n+' responses)')}</div>
+ <div class="two"><div class="c"><h2>Bookings per day</h2>${bars(d.days,'d')}</div><div class="c"><h2>Busiest time slots</h2>${bars(d.slots,'t')}</div></div>
+ <div class="two"><div class="c"><h2>Occupancy · ${d.date} ${d.slot}</h2>${d.floors.map(f=>`<div class="r"><span>Floor ${f.floor}</span><span class="m">${f.taken} of ${f.total} taken</span></div><div class="bar"><i style="width:${f.taken/f.total*100}%"></i></div>`).join('')}</div>
+ <div class="c"><h2>Close a seat for maintenance</h2><form onsubmit="return blk(event)"><label for="bf">Floor (1 to 3)</label><input id="bf" type="number" min="1" max="3" required><label for="bs">Seat (1 to 30)</label><input id="bs" type="number" min="1" max="30" required><button class="p" type="submit">Close seat</button></form>
+ ${d.blocked.map(x=>`<div class="r mt"><span>Floor ${x.floor} · Seat ${x.seat} closed</span><button onclick="unblk(${x.floor},${x.seat})">Reopen</button></div>`).join('')}</div></div>
+ <div class="c"><h2>Latest bookings</h2><div style="overflow-x:auto"><table><tr><th>Student</th><th>Roll</th><th>Seat</th><th>When</th><th>Status</th></tr>${d.recent.map(b=>`<tr><td>${esc(b.name)}</td><td>${esc(b.roll)}</td><td>F${b.floor}-${b.seat}</td><td>${b.date} ${b.slot}</td><td>${b.status.replace('_',' ')}</td></tr>`).join('')||'<tr><td colspan="5">No bookings yet.</td></tr>'}</table></div></div>`)}).catch(e=>say(e.message,'e'))}
+function blk(e){e.preventDefault();api('/api/admin/block',{method:'POST',body:JSON.stringify({floor:+$('bf').value,seat:+$('bs').value})}).then(()=>{admin();say('Seat closed. Its upcoming bookings were cancelled.','o')}).catch(er=>say(er.message,'e'));return false}
+function unblk(f,s){api('/api/admin/unblock',{method:'POST',body:JSON.stringify({floor:f,seat:s})}).then(()=>{admin();say('Seat reopened.','o')}).catch(er=>say(er.message,'e'))}
+let F=1,SL=null,dt=null,pick=null,Q=false,data=null;
+function bookPage(){F=1;SL=null;dt=null;pick=null;Q=false;M(`<div class="nar"><h1>Book a seat</h1><p class="m">Choose a day, floor and time, then tap a seat.</p><div class="c"><div class="m">Day</div><div class="ch" id="days"></div><div class="m mt">Floor</div><div class="ch" id="fl"></div><div class="m mt">Time slot</div><div class="ch" id="sl"></div></div><div class="m" id="cnt"></div><div class="ch" style="margin:8px 0"><button id="qz" onclick="Q=!Q;pick=null;draw()">Quiet zone only</button></div><div class="c"><div class="g" id="grid"></div><p class="m">⚡ power outlet · struck through = taken · seats 1 to 12 are the quiet zone</p></div><button class="p go" id="go" onclick="doBook()" disabled>Choose a seat</button></div>`);load()}
+function load(){api(`/api/seats?floor=${F}${dt?'&date='+dt:''}${SL?'&slot='+SL:''}`).then(d=>{data=d;dt=d.date;SL=d.slot;draw()}).catch(e=>say(e.message,'e'))}
+function draw(){if(!$('grid'))return;const f=d=>d.toLocaleDateString('en-CA');
+ $('days').innerHTML=[[f(new Date()),'Today'],[f(new Date(Date.now()+864e5)),'Tomorrow']].map(x=>`<button aria-pressed="${dt===x[0]}" onclick="dt='${x[0]}';SL=null;pick=null;load()">${x[1]}</button>`).join('');
+ $('fl').innerHTML=[1,2,3].map(n=>`<button aria-pressed="${F===n}" onclick="F=${n};pick=null;load()">Floor ${n}</button>`).join('');
+ $('sl').innerHTML=data.slots.map(s=>`<button ${s.past?'disabled ':''}aria-pressed="${SL===s.t}" onclick="SL='${s.t}';pick=null;load()">${s.t}</button>`).join('');
+ $('qz').setAttribute('aria-pressed',Q);let free=0;
+ $('grid').innerHTML=data.seats.map(s=>{const t=s.taken||(Q&&!s.quiet);if(!t)free++;return `<button class="${t?'t':''}" ${t?'disabled ':''}aria-pressed="${pick===s.n}" aria-label="Seat ${s.n}${t?' unavailable':''}${s.outlet?', power outlet':''}" onclick="pick=${s.n};draw()">${s.n}${s.outlet?'⚡':''}</button>`}).join('');
+ $('cnt').textContent=`${free} seats available on floor ${F} at ${SL}`;$('go').disabled=!pick;$('go').textContent=pick?`Book seat ${pick} · Floor ${F} · ${SL}`:'Choose a seat'}
+function doBook(){api('/api/bookings',{method:'POST',body:JSON.stringify({floor:F,seat:pick,date:dt,slot:SL})}).then(r=>{say(`Booked: seat ${r.seat}, floor ${r.floor}, ${r.date} ${r.slot}. Check in within 15 minutes of the start time or the seat is released.`,'o');pick=null;load()}).catch(e=>{say(e.message,'e');load()})}
+function route(){const p=location.hash.slice(2)||'home',pg=['home','login','signup','dashboard','book','bookings','profile','feedback','admin'].includes(p)?p:'home';
+ if(PRIV.includes(pg)&&!TOK){location.hash='#/login';return}if((pg==='login'||pg==='signup')&&TOK){location.hash='#/dashboard';return}
+ if(pg==='admin'&&(!ME||ME.role!=='admin')){location.hash='#/dashboard';return}navbar(pg);$('nav').classList.remove('open');say('');({home,login:()=>authForm('login'),signup:()=>authForm('signup'),dashboard,book:bookPage,bookings,profile,feedback,admin})[pg]();window.scrollTo(0,0)}
+applyPrefs(getP());window.onhashchange=route;
+TOK?api('/api/me').then(u=>{ME=u;syncPrefs();route()}).catch(()=>{TOK='';localStorage.removeItem('lt');route()}):route();
+</script></body></html>
