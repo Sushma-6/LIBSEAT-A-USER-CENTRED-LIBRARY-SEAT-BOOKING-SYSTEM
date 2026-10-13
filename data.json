@@ -1,0 +1,48 @@
+{
+ "users": [
+  {
+   "id": "8372ceb0ae99",
+   "name": "Library Admin",
+   "roll": "ADMIN",
+   "email": "admin@libseat.com",
+   "role": "admin",
+   "prefs": {},
+   "salt": "5b3907f943204454bcbb5b8501574c7e",
+   "pw": "bac5c9d97cf082ad7ba8db8d386b733b57bde9998e2663deeaf245c482f11cb7",
+   "createdAt": "2026-10-17T07:00:57.541Z"
+  },
+  {
+   "id": "a1b36bed4e78",
+   "name": "Muni Sushma Sai Dasari",
+   "roll": "23WU0101032",
+   "email": "dmsushma06@gmail.com",
+   "role": "student",
+   "prefs": {},
+   "salt": "67686e4e44398cfe95b130dd88429774",
+   "pw": "530c4c028ef5444abf82362c0a3b3939539a1cde45a87787184ceceb931b7f3f",
+   "createdAt": "2026-10-17T07:02:04.029Z"
+  }
+ ],
+ "sessions": {
+  "dd35e5b5a7efddf09026a315c4d0a67ef18b68808c19e5c9": {
+   "uid": "8372ceb0ae99",
+   "exp": 1792826890574
+  }
+ },
+ "bookings": [
+  {
+   "id": "mvc1v7ffp81",
+   "uid": "a1b36bed4e78",
+   "name": "Muni Sushma Sai Dasari",
+   "roll": "23WU0101032",
+   "floor": 1,
+   "seat": 2,
+   "date": "2026-10-17",
+   "slot": "14:00",
+   "status": "booked",
+   "createdAt": "2026-10-17T07:03:12.219Z"
+  }
+ ],
+ "sus": {},
+ "blocked": []
+}
