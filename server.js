@@ -5,7 +5,9 @@ const DB = path.join(__dirname, 'data.json'), PORT = process.env.PORT || 3000;
 const SLOTS = ['08:00','10:00','12:00','14:00','16:00'], FLOORS = [1,2,3], SEATS = 30, GRACE = 15;
 let db = { users: [], sessions: {}, bookings: [], sus: {}, blocked: [] };
 try { db = Object.assign(db, JSON.parse(fs.readFileSync(DB))); } catch (e) {}
-const save = () => fs.writeFileSync(DB, JSON.stringify(db, null, 1));
+const save = () => { try { fs.writeFileSync(DB, JSON.stringify(db, null, 1)); } catch (e) { console.error('Could not save data:', e.message); } };
+process.on('uncaughtException', e => console.error('Uncaught:', e));
+process.on('unhandledRejection', e => console.error('Unhandled:', e));
 const ymd = d => d.toLocaleDateString('en-CA');
 const start = (d, s) => new Date(d + 'T' + s + ':00').getTime();
 const isPast = (d, s) => Date.now() > start(d, s) + GRACE * 6e4;
@@ -34,9 +36,13 @@ function sweep() {
 const send = (res, c, o) => { res.writeHead(c, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(o)); };
 const body = req => new Promise(r => { let s = ''; req.on('data', c => s += c); req.on('end', () => { try { r(JSON.parse(s || '{}')); } catch (e) { r({}); } }); });
 function session(u) { const t = crypto.randomBytes(24).toString('hex'); db.sessions[t] = { uid: u.id, exp: Date.now() + 7 * 864e5 }; return t; }
-http.createServer(async (req, res) => {
+const handler = async (req, res) => {
   const u = new URL(req.url, 'http://x'), p = u.pathname, q = u.searchParams, M = req.method;
-  if (M === 'GET' && p === '/') return res.writeHead(200, { 'Content-Type': 'text/html' }).end(fs.readFileSync(path.join(__dirname, 'public', 'index.html')));
+  if (p === '/healthz') return res.writeHead(200, { 'Content-Type': 'text/plain' }).end('ok');
+  if (M === 'GET' && p === '/') {
+    try { const html = fs.readFileSync(path.join(__dirname, 'public', 'index.html')); return res.writeHead(200, { 'Content-Type': 'text/html' }).end(html); }
+    catch (e) { console.error('Missing public/index.html:', e.message); return res.writeHead(500, { 'Content-Type': 'text/plain' }).end('LibSeat is running, but public/index.html was not found. Upload the public folder to the repository.'); }
+  }
   if (!p.startsWith('/api/')) return send(res, 404, { error: 'Not found' });
   sweep();
   if (M === 'GET' && p === '/api/seats') {
@@ -148,6 +154,5 @@ http.createServer(async (req, res) => {
     }
   }
   send(res, 404, { error: 'Not found' });
-}).listen(PORT, '0.0.0.0', () => {
-  console.log(`LibSeat running on port ${PORT}`);
-});
+};
+http.createServer((req, res) => handler(req, res).catch(e => { console.error('Request error:', e); try { send(res, 500, { error: 'Server error. Please try again.' }); } catch (_) {} })).listen(PORT, '0.0.0.0', () => console.log('LibSeat running on port ' + PORT));
